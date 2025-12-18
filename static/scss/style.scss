@@ -1,0 +1,10 @@
+@import "material/_variables";
+@import "material/_gradients";
+@import "material/_misc";
+@import "material/_navbar-vertical";
+@import "material/_typography";
+@import "material/mixins/_transitions";
+
+.border-radius-xl {
+  border-radius: 0.75rem;
+}

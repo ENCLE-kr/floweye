@@ -1,0 +1,22 @@
+@import "variables/_misc";
+
+// Horizontal Line
+hr.horizontal {
+  background-color: $hr-bg-color;
+
+  &.light {
+    background-color: $hr-bg-color-light;
+  }
+  &.dark {
+    background-color: $hr-bg-color-dark;
+  }
+
+  &.gray-light {
+    background-image: $hr-horizontal-bg-image-gray-light;
+  }
+}
+
+// Cursor Pointer Class
+.cursor-pointer {
+  cursor: pointer;
+}

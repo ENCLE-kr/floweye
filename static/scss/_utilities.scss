@@ -1,0 +1,27 @@
+@import "material/_variables";
+
+.bg-white {
+  background-color: $white !important;
+}
+
+.bg-gray-200 {
+  background-color: $gray-200 !important;
+}
+
+.border-0 {
+  border-width: 0 !important;
+}
+
+.opacity-5 {
+  opacity: 0.5 !important;
+}
+
+.position-absolute {
+  position: absolute !important;
+}
+
+@media (min-width: 1200px) {
+  .d-xl-none {
+    display: none !important;
+  }
+}

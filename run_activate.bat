@@ -1,0 +1,1 @@
+c:\venvs\floweye\Scripts\activate.bat
