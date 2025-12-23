@@ -1,4 +1,6 @@
 @import "_variables";
+@import "variables/_card-box-shadow";
+@import "variables/_dark-version";
 @import "variables/_navbar-vertical";
 @import "mixins/_breakpoints";
 @import "mixins/_gradients";
@@ -159,6 +161,69 @@
   }
 }
 
+.navbar-vertical {
+  &.bg-white {
+    box-shadow: $card-box-shadow;
+
+    .navbar-nav {
+      .nav-link {
+        &.active {
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
+  &.bg-transparent,
+  &.bg-white {
+    .navbar-nav {
+      .nav-link {
+        &.active:after {
+          color: $dark-version-caret-sidebar-color !important;
+        }
+      }
+    }
+  }
+
+  .navbar-nav .nav-link.active {
+    font-weight: $font-weight-normal;
+    box-shadow: $card-box-shadow;
+    border-radius: $border-radius-md;
+    margin-top: 1.5px;
+    margin-bottom: 1.5px;
+  }
+
+  .navbar-nav > .nav-item .nav-link.active {
+    color: $white;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    background-color: $navbar-vertical-hover-bg-color;
+    & + .collapse,
+    & + .collapsing {
+      .nav-item.active {
+        .nav-link.active {
+          @include gradient-directional(nth($rose, 1) 0%, nth($rose, -1) 100%, $deg: 195deg);
+          span {
+            color: $white;
+          }
+        }
+      }
+      .nav-item {
+        .nav-link.active {
+          background-color: $navbar-vertical-hover-bg-color;
+          & + .collapse {
+            .nav-item {
+              .nav-link.active {
+                @include gradient-directional(nth($rose, 1) 0%, nth($rose, -1) 100%, $deg: 195deg);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 .sidenav {
   // Define colors
   @each $color, $value in $theme-colors {
@@ -299,6 +364,94 @@
     &.g-sidenav-pinned {
       .sidenav {
         transform: translateX(0);
+      }
+    }
+  }
+}
+
+// Styles for minimized sidenav
+.navbar-vertical {
+  .navbar-brand {
+    .navbar-brand-img,
+    span {
+      @include transition($transition-base);
+    }
+  }
+
+  .nav-item {
+    .nav-link {
+      span.sidenav-mini-icon {
+        @include transition($transition-base);
+        text-align: center;
+        min-width: $navbar-icon-min-width;
+      }
+    }
+  }
+
+  .docs-info {
+    @include transition($transition-base);
+  }
+
+  .nav-item {
+    .nav-link {
+      margin-top: 3px;
+      margin-bottom: 3px;
+      border-radius: $navbar-nav-link-border-radius;
+      margin-bottom: 1.5px;
+      margin-top: 1.5px;
+
+      + .collapse,
+      + .collapsing {
+        .nav {
+          .nav-item {
+            > .nav-link {
+              margin-top: 1.5px;
+              margin-bottom: 1.5px;
+              + .collapse,
+              + .collapsing {
+                .nav {
+                  .nav-item {
+                    .nav-link {
+                      margin-top: 1.5px;
+                      margin-bottom: 1.5px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    &:hover {
+      .nav-link {
+        background-color: $navbar-vertical-hover-bg-color;
+        border-radius: $navbar-nav-link-border-radius;
+
+        + .collapse {
+          .nav {
+            .nav-item {
+              &:hover {
+                > .nav-link {
+                  background-color: $navbar-vertical-hover-bg-color;
+                  border-radius: $navbar-nav-link-border-radius;
+                }
+              }
+              + .collapse {
+                .nav {
+                  .nav-item {
+                    &:hover {
+                      .nav-link {
+                        background-color: $navbar-vertical-hover-bg-color;
+                        border-radius: $navbar-nav-link-border-radius;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

@@ -7,12 +7,20 @@ hr.horizontal {
   &.light {
     background-color: $hr-bg-color-light;
   }
+
   &.dark {
     background-color: $hr-bg-color-dark;
   }
 
   &.gray-light {
     background-image: $hr-horizontal-bg-image-gray-light;
+  }
+
+  &.white {
+    // custom
+    background-color: $hr-bg-color-white;
+    border-color: $hr-bd-color-white;
+    opacity: 0.5;
   }
 }
 
