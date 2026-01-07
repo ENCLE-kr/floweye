@@ -1,41 +1,31 @@
-<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-gradient-dark ps bg-white" id="sidenav-main">
-  <div class="sidenav-header">
-    <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-    <a class="navbar-brand m-0 d-flex align-items-center justify-content-center w-100 h-100" href="" target="_blank">
-      <img src="/static/images/floweye-icon.png" class="navbar-brand-img" alt="main_logo" />
-      <!-- <span class="ms-1 flex-grow-1 text-center font-weight-bold text-white">FLOWEYE</span> -->
-    </a>
+{% load static %}
+<!-- 사이드바 -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <img src="{% static 'images/floweye-icon.png' %}" alt="FLOWEYE Logo" class="logo-img" />
+    </div>
   </div>
-  <hr class="horizontal white mt-0 mb-2" />
-  <div class="collapse navbar-collapse  w-auto  max-height-vh-100" id="sidenav-collapse-main">
-    <ul class="navbar-nav">
+  <nav class="sidebar-nav">
+    <ul class="nav-menu">
       <li class="nav-item">
-        <a class="nav-link text-white {% if 'index' in segment %} active bg-gradient-info {% endif %}" href="{% url 'index' %}">
-          <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="material-icons opacity-10">dashboard</i>
-          </div>
-          <span class="nav-link-text ms-1">Dashboard</span>
+        <a href="{% url 'dashboard' %}" class="nav-link {% if segment == 'dashboard' or segment == 'index' %}active{% endif %}">
+          <i class="bi bi-speedometer2"></i>
+          <span>Dashboard</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-white {% if 'map' in segment %} active bg-gradient-info {% endif %}" 
-           href="{% url 'map' %}">
-          <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="material-icons opacity-10">map</i>
-          </div>
-          <span class="nav-link-text ms-1">Map</span>
+        <a href="{% url 'map' %}" class="nav-link {% if segment == 'map' %}active{% endif %}">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span>Map</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-white {% if 'tables' in segment %} active bg-gradient-info {% endif %}" 
-           href="{% url 'tables' %}">
-          <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="material-icons opacity-10">sensors</i>
-          </div>
-          <span class="nav-link-text ms-1">Devices</span>
+        <a href="{% url 'devices' %}" class="nav-link {% if segment == 'devices' %}active{% endif %}">
+          <i class="bi bi-device-hdd"></i>
+          <span>Devices</span>
         </a>
       </li>
     </ul>
-  </div>
-  </div>
+  </nav>
 </aside>

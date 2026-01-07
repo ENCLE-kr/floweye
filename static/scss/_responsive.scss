@@ -1,0 +1,20 @@
+@import "variables";
+
+// 반응형 디자인
+@media (max-width: $breakpoint-mobile) {
+  .sidebar {
+    width: $sidebar-width-mobile;
+  }
+
+  .logo-text {
+    display: none;
+  }
+
+  .nav-link span {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: $sidebar-width-mobile;
+  }
+}

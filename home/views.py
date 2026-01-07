@@ -1,19 +1,25 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 def index(request):
-    context = {
-        'segment': 'index'
-    }
-    return render(request, 'home/index.html', context)
+    return redirect('dashboard')
 
-def tables(request):
+def dashboard(request):
     context = {
-        'segment': 'tables'
+        'segment': 'dashboard',
+        'page_title': 'Dashboard'
     }
-    return render(request, 'home/tables.html', context)
+    return render(request, 'home/dashboard.html', context)
 
 def map(request):
     context = {
-        'segment': 'map'
+        'segment': 'map',
+        'page_title': 'Map'
     }
     return render(request, 'home/map.html', context)
+
+def devices(request):
+    context = {
+        'segment': 'devices',
+        'page_title': 'Devices'
+    }
+    return render(request, 'home/devices.html', context)

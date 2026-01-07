@@ -1,0 +1,50 @@
+@import "variables";
+
+// 페이지 헤더
+.page-header {
+  margin-bottom: $spacing-xl;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: $navbar-text-active;
+    margin-bottom: $spacing-xs;
+  }
+
+  .text-muted {
+    color: $navbar-text;
+    font-size: 14px;
+  }
+}
+
+// 컨텐츠 영역
+.content-area {
+  margin-top: $spacing-lg;
+}
+
+// 카드 스타일
+.card {
+  background-color: $card-bg;
+  border: 1px solid $card-border;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  margin-bottom: $spacing-lg;
+
+  &-body {
+    padding: $spacing-lg;
+  }
+
+  &-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: $navbar-text-active;
+    margin-bottom: $spacing-sm;
+  }
+
+  &-text {
+    color: $navbar-text;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+}

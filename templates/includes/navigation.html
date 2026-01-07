@@ -1,0 +1,9 @@
+<!-- 상단 네비게이션 바 -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'index' %}">Page</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ page_title|default:"Dashboard" }}</li>
+    </ol>
+  </div>
+</nav>
