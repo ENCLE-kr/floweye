@@ -1,0 +1,203 @@
+@import "variables";
+
+// Dashboard 컨테이너
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+// 상단: 수치 카드 섹션
+.dashboard-top {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-lg;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background-color: $card-bg;
+  border: 1px solid $card-border;
+  border-radius: $border-radius;
+  padding: $spacing-xl;
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  box-shadow: $shadow-sm;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $sidebar-active 0%, lighten($sidebar-active, 10%) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    i {
+      font-size: 28px;
+      color: #ffffff;
+    }
+  }
+
+  .stat-content {
+    flex: 1;
+    min-width: 0;
+
+    .stat-label {
+      font-size: 14px;
+      color: $navbar-text;
+      margin-bottom: $spacing-xs;
+      font-weight: 500;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: $navbar-text-active;
+      line-height: 1.2;
+    }
+  }
+}
+
+// 중간: 그래프 섹션
+.dashboard-middle {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-lg;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-card {
+  background-color: $card-bg;
+  border: 1px solid $card-border;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+
+  .chart-header {
+    padding: $spacing-lg $spacing-xl;
+    border-bottom: 1px solid $card-border;
+
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: $navbar-text-active;
+      margin: 0;
+    }
+  }
+
+  .chart-container {
+    padding: $spacing-lg;
+    position: relative;
+    height: 300px;
+
+    canvas {
+      max-height: 100%;
+    }
+  }
+}
+
+// 하단: 디바이스 정보 섹션
+.dashboard-bottom {
+  .device-section {
+    background-color: $card-bg;
+    border: 1px solid $card-border;
+    border-radius: $border-radius;
+    box-shadow: $shadow-sm;
+    padding: $spacing-xl;
+
+    .section-header {
+      margin-bottom: $spacing-xl;
+      padding-bottom: $spacing-md;
+      border-bottom: 2px solid $sidebar-active;
+
+      h2 {
+        font-size: 24px;
+        font-weight: 600;
+        color: $navbar-text-active;
+        margin: 0;
+      }
+    }
+  }
+
+  .device-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: $spacing-lg;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .device-card {
+    background-color: $body-bg;
+    border: 1px solid $card-border;
+    border-radius: $border-radius;
+    padding: $spacing-lg;
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-sm;
+    }
+
+    .device-status {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 4px;
+
+      &.online {
+        background-color: #28a745;
+        box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+      }
+
+      &.offline {
+        background-color: #dc3545;
+        box-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+      }
+    }
+
+    .device-info {
+      flex: 1;
+
+      h4 {
+        font-size: 18px;
+        font-weight: 600;
+        color: $navbar-text-active;
+        margin: 0 0 $spacing-xs 0;
+      }
+
+      p {
+        font-size: 14px;
+        color: $navbar-text;
+        margin: $spacing-xs 0;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
