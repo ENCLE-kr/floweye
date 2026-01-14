@@ -80,48 +80,146 @@
 
   <!-- 하단: 디바이스 정보 -->
   <section class="dashboard-bottom">
-    <div class="device-section">
-      <div class="section-header">
-        <h2>디바이스 정보</h2>
+    <div class="bottom-content">
+      <div class="device-section">
+        <div class="section-header">
+          <h2>디바이스 정보</h2>
+        </div>
+        <div class="table-responsive">
+          <table class="device-table">
+            <thead>
+              <tr>
+                <th>디바이스 이름</th>
+                <th>위치</th>
+                <th>상태</th>
+                <th>밀집레벨</th>
+                <th>밀집도(m²)</th>
+                <th>인원수</th>
+                <th>밀집도 추이</th>
+                <th>마지막 업데이트</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-device-id="1">
+                <td>
+                  <span class="device-name-text">Device-001</span>
+                </td>
+                <td>
+                  <span class="device-location-text">1층 로비</span>
+                </td>
+                <td>
+                  <span class="device-status-badge online">정상 작동</span>
+                </td>
+                <td>
+                  <span class="density-level-badge high">높음</span>
+                </td>
+                <td>
+                  <span class="density-value">1.56명</span>
+                </td>
+                <td>
+                  <span class="occupancy-count">156명</span>
+                </td>
+                <td>
+                  <div class="sparkline-chart-container">
+                    <canvas class="sparkline-chart" data-device-id="1" width="120" height="30"></canvas>
+                  </div>
+                </td>
+                <td>2분 전</td>
+              </tr>
+              <tr data-device-id="2">
+                <td>
+                  <span class="device-name-text">Device-002</span>
+                </td>
+                <td>
+                  <span class="device-location-text">2층 복도</span>
+                </td>
+                <td>
+                  <span class="device-status-badge online">정상 작동</span>
+                </td>
+                <td>
+                  <span class="density-level-badge medium">보통</span>
+                </td>
+                <td>
+                  <span class="density-value">0.89명</span>
+                </td>
+                <td>
+                  <span class="occupancy-count">89명</span>
+                </td>
+                <td>
+                  <div class="sparkline-chart-container">
+                    <canvas class="sparkline-chart" data-device-id="2" width="120" height="30"></canvas>
+                  </div>
+                </td>
+                <td>1분 전</td>
+              </tr>
+              <tr data-device-id="3">
+                <td>
+                  <span class="device-name-text">Device-003</span>
+                </td>
+                <td>
+                  <span class="device-location-text">3층 회의실</span>
+                </td>
+                <td>
+                  <span class="device-status-badge offline">오프라인</span>
+                </td>
+                <td>
+                  <span class="density-level-badge low">낮음</span>
+                </td>
+                <td>
+                  <span class="density-value">--</span>
+                </td>
+                <td>
+                  <span class="occupancy-count">--</span>
+                </td>
+                <td>
+                  <div class="sparkline-chart-container">
+                    <canvas class="sparkline-chart" data-device-id="3" width="120" height="30"></canvas>
+                  </div>
+                </td>
+                <td>15분 전</td>
+              </tr>
+              <tr data-device-id="4">
+                <td>
+                  <span class="device-name-text">Device-004</span>
+                </td>
+                <td>
+                  <span class="device-location-text">지하 1층</span>
+                </td>
+                <td>
+                  <span class="device-status-badge online">정상 작동</span>
+                </td>
+                <td>
+                  <span class="density-level-badge low">낮음</span>
+                </td>
+                <td>
+                  <span class="density-value">0.34명</span>
+                </td>
+                <td>
+                  <span class="occupancy-count">34명</span>
+                </td>
+                <td>
+                  <div class="sparkline-chart-container">
+                    <canvas class="sparkline-chart" data-device-id="4" width="120" height="30"></canvas>
+                  </div>
+                </td>
+                <td>3분 전</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="device-grid">
-        <div class="device-card">
-          <div class="device-status online"></div>
-          <div class="device-info">
-            <h4>Device-001</h4>
-            <p>위치: 1층 로비</p>
-            <p>상태: 정상 작동</p>
-            <p>마지막 업데이트: 2분 전</p>
-          </div>
-        </div>
 
-        <div class="device-card">
-          <div class="device-status online"></div>
-          <div class="device-info">
-            <h4>Device-002</h4>
-            <p>위치: 2층 복도</p>
-            <p>상태: 정상 작동</p>
-            <p>마지막 업데이트: 1분 전</p>
-          </div>
+      <!-- 알람 로그 섹션 -->
+      <div class="alarm-section">
+        <div class="section-header">
+          <h2>밀집도 알람</h2>
+          <button class="btn-clear-alarms" onclick="clearAlarms()" title="알람 지우기">
+            <i class="bi bi-trash"></i>
+          </button>
         </div>
-
-        <div class="device-card">
-          <div class="device-status offline"></div>
-          <div class="device-info">
-            <h4>Device-003</h4>
-            <p>위치: 3층 회의실</p>
-            <p>상태: 오프라인</p>
-            <p>마지막 업데이트: 15분 전</p>
-          </div>
-        </div>
-
-        <div class="device-card">
-          <div class="device-status online"></div>
-          <div class="device-info">
-            <h4>Device-004</h4>
-            <p>위치: 지하 1층</p>
-            <p>상태: 정상 작동</p>
-            <p>마지막 업데이트: 3분 전</p>
+        <div class="alarm-log-container">
+          <div class="alarm-log" id="alarmLog">
+            <!-- 알람 로그 항목들이 여기에 동적으로 추가됩니다 -->
           </div>
         </div>
       </div>

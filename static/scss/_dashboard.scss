@@ -117,6 +117,16 @@
 
 // 하단: 디바이스 정보 섹션
 .dashboard-bottom {
+  .bottom-content {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: $spacing-xl;
+
+    @media (max-width: 1400px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .device-section {
     background-color: $card-bg;
     border: 1px solid $card-border;
@@ -127,7 +137,7 @@
     .section-header {
       margin-bottom: $spacing-xl;
       padding-bottom: $spacing-md;
-      border-bottom: 2px solid $sidebar-active;
+      border-bottom: 1px solid $navbar-border;
 
       h2 {
         font-size: 24px;
@@ -136,68 +146,314 @@
         margin: 0;
       }
     }
-  }
 
-  .device-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: $spacing-lg;
+    .table-responsive {
+      overflow-x: auto;
+    }
 
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
+    .device-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background-color: $card-bg;
+      border-radius: $border-radius;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid $card-border;
+
+      thead {
+        background: linear-gradient(135deg, $body-bg 0%, darken($body-bg, 2%) 100%);
+        border-bottom: 2px solid $sidebar-active;
+
+        th {
+          padding: $spacing-lg $spacing-xl;
+          text-align: left;
+          font-weight: 700;
+          font-size: 13px;
+          color: $navbar-text-active;
+          white-space: nowrap;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          border-bottom: 2px solid $sidebar-active;
+
+          &:first-child {
+            padding-left: $spacing-xl;
+          }
+
+          &:last-child {
+            padding-right: $spacing-xl;
+            text-align: center;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+          transition: all 0.2s ease;
+          background-color: $card-bg;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          &:hover {
+            background-color: rgba(52, 152, 219, 0.02);
+            transform: scale(1.001);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          }
+
+          td {
+            padding: $spacing-lg $spacing-xl;
+            font-size: 14px;
+            color: $navbar-text;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+            &:first-child {
+              padding-left: $spacing-xl;
+              font-weight: 600;
+              color: $navbar-text-active;
+            }
+
+            &:last-child {
+              padding-right: $spacing-xl;
+              text-align: center;
+            }
+
+            .device-name-text,
+            .device-location-text {
+              display: inline-block;
+              min-width: 100px;
+              font-weight: 500;
+            }
+
+            .device-status-badge {
+              display: inline-flex;
+              align-items: center;
+              padding: 6px 14px;
+              border-radius: 20px;
+              font-size: 12px;
+              font-weight: 600;
+              white-space: nowrap;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              transition: all 0.2s ease;
+
+              &.online {
+                background: linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(40, 167, 69, 0.1) 100%);
+                color: #28a745;
+                border: 1px solid rgba(40, 167, 69, 0.2);
+              }
+
+              &.offline {
+                background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(220, 53, 69, 0.1) 100%);
+                color: #dc3545;
+                border: 1px solid rgba(220, 53, 69, 0.2);
+              }
+
+              &.maintenance {
+                background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 193, 7, 0.1) 100%);
+                color: #f39c12;
+                border: 1px solid rgba(255, 193, 7, 0.2);
+              }
+            }
+
+            // 밀집레벨 배지
+            .density-level-badge {
+              display: inline-flex;
+              align-items: center;
+              padding: 4px 10px;
+              border-radius: 12px;
+              font-size: 11px;
+              font-weight: 600;
+              white-space: nowrap;
+
+              &.low {
+                background-color: rgba(40, 167, 69, 0.15);
+                color: #28a745;
+              }
+
+              &.medium {
+                background-color: rgba(255, 193, 7, 0.15);
+                color: #f39c12;
+              }
+
+              &.high {
+                background-color: rgba(220, 53, 69, 0.15);
+                color: #dc3545;
+              }
+            }
+
+            // 밀집도 값
+            .density-value {
+              font-weight: 600;
+              color: $navbar-text-active;
+              font-size: 14px;
+            }
+
+            // 인원수
+            .occupancy-count {
+              font-weight: 500;
+              color: $navbar-text-active;
+              font-size: 14px;
+            }
+
+            // 스파크라인 차트 컨테이너
+            .sparkline-chart-container {
+              width: 120px;
+              height: 30px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+
+            .sparkline-chart {
+              max-width: 100%;
+              max-height: 100%;
+            }
+          }
+
+          // 마지막 업데이트 시간 스타일
+          td:nth-child(8) {
+            color: $navbar-text;
+            font-size: 13px;
+            font-style: italic;
+          }
+        }
+      }
     }
   }
 
-  .device-card {
-    background-color: $body-bg;
+  // 알람 섹션
+  .alarm-section {
+    background-color: $card-bg;
     border: 1px solid $card-border;
     border-radius: $border-radius;
-    padding: $spacing-lg;
+    box-shadow: $shadow-sm;
+    padding: $spacing-xl;
     display: flex;
-    align-items: flex-start;
-    gap: $spacing-md;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    flex-direction: column;
+    max-height: 600px;
 
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: $shadow-sm;
-    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-lg;
+      padding-bottom: $spacing-md;
+      border-bottom: 1px solid $navbar-border;
 
-    .device-status {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 4px;
-
-      &.online {
-        background-color: #28a745;
-        box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
-      }
-
-      &.offline {
-        background-color: #dc3545;
-        box-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
-      }
-    }
-
-    .device-info {
-      flex: 1;
-
-      h4 {
-        font-size: 18px;
+      h2 {
+        font-size: 24px;
         font-weight: 600;
         color: $navbar-text-active;
-        margin: 0 0 $spacing-xs 0;
+        margin: 0;
       }
 
-      p {
-        font-size: 14px;
+      .btn-clear-alarms {
+        background: none;
+        border: none;
+        padding: 6px 10px;
+        cursor: pointer;
         color: $navbar-text;
-        margin: $spacing-xs 0;
+        font-size: 16px;
+        transition: all 0.2s ease;
+        border-radius: 4px;
+
+        &:hover {
+          color: #dc3545;
+          background-color: rgba(220, 53, 69, 0.1);
+        }
+      }
+    }
+
+    .alarm-log-container {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 400px;
+    }
+
+    .alarm-log {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+    }
+
+    .alarm-item {
+      padding: $spacing-md;
+      border-left: 4px solid;
+      border-radius: 4px;
+      background-color: $body-bg;
+      transition: all 0.2s ease;
+      animation: slideIn 0.3s ease;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+        transform: translateX(4px);
+      }
+
+      &.medium {
+        border-left-color: #f39c12;
+        background-color: rgba(255, 193, 7, 0.05);
+      }
+
+      &.high {
+        border-left-color: #dc3545;
+        background-color: rgba(220, 53, 69, 0.05);
+      }
+
+      .alarm-time {
+        font-size: 11px;
+        color: $navbar-text;
+        font-weight: 500;
+        margin-bottom: 4px;
+        font-family: "Courier New", monospace;
+      }
+
+      .alarm-content {
+        font-size: 13px;
+        color: $navbar-text-active;
         line-height: 1.5;
+
+        .alarm-device {
+          font-weight: 600;
+          color: $navbar-text-active;
+        }
+
+        .alarm-location {
+          color: $navbar-text;
+        }
+
+        .alarm-level {
+          display: inline-block;
+          margin-left: $spacing-xs;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 11px;
+          font-weight: 600;
+
+          &.medium {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #f39c12;
+          }
+
+          &.high {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+          }
+        }
       }
     }
   }
 }
 
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
