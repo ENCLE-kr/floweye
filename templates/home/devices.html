@@ -1,15 +1,119 @@
-{% extends "layouts/base.html" %} {% block content %}
-<div class="page-header">
-  <h1>Devices</h1>
-  <p class="text-muted">디바이스 관리 페이지입니다.</p>
-</div>
+{% extends "layouts/base.html" %} {% load static %} {% block title %}FLOWEYE | Devices{% endblock %} {% block stylesheets %}
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="{% static 'css/devices.css' %}" rel="stylesheet" />
+{% endblock stylesheets %} {% block content %}
+<div class="devices-page min-h-screen py-6 px-4 md:px-12">
+  <nav class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 neo-button rounded-2xl flex items-center justify-center text-white">
+        <i class="fas fa-microchip text-2xl"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-white">CORE <span class="text-indigo-400">CONNECT</span></h1>
+        <div class="flex items-center gap-2 text-xs text-slate-400 font-medium">
+          <span class="status-dot text-emerald-500 bg-emerald-500"></span>
+          SYSTEM OPERATIONAL
+        </div>
+      </div>
+    </div>
 
-<div class="content-area">
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">디바이스</h5>
-      <p class="card-text">Devices 페이지입니다. 여기에 디바이스 목록이 표시됩니다.</p>
+    <div class="flex items-center gap-4 w-full md:w-auto">
+      <div class="relative flex-1 md:w-64">
+        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+        <input type="text" id="search-input" placeholder="디바이스 검색..." class="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-2.5 pl-11 pr-4 text-sm focus:outline-none focus:border-indigo-500 transition-all text-slate-200" />
+      </div>
+      <button onclick="toggleModal(true)" class="neo-button text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 whitespace-nowrap">
+        <i class="fas fa-plus"></i>
+        ADD DEVICE
+      </button>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="glass-panel p-5 rounded-2xl">
+        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total Assets</p>
+        <h3 id="total-count" class="text-3xl font-bold text-white">0</h3>
+      </div>
+      <div class="glass-panel p-5 rounded-2xl">
+        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Active Nodes</p>
+        <h3 class="text-3xl font-bold text-emerald-400">100%</h3>
+      </div>
+      <div class="hidden md:block glass-panel p-5 rounded-2xl">
+        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Uptime</p>
+        <h3 class="text-3xl font-bold text-indigo-400">99.9<span class="text-sm">%</span></h3>
+      </div>
+      <div class="hidden md:block glass-panel p-5 rounded-2xl">
+        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Region</p>
+        <h3 class="text-3xl font-bold text-cyan-400">SEOUL</h3>
+      </div>
+    </div>
+
+    <div id="device-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+    <div id="empty-state" class="hidden flex flex-col items-center justify-center py-32 opacity-50">
+      <i class="fas fa-satellite-dish text-6xl mb-6 text-slate-600"></i>
+      <p class="text-xl font-medium text-slate-400">감지된 디바이스가 없습니다.</p>
+    </div>
+  </main>
+
+  <div id="modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-700/50 rounded-3xl w-full max-w-lg mx-4 overflow-hidden shadow-2xl">
+      <div class="px-8 py-6 border-b border-slate-800 flex justify-between items-center">
+        <div>
+          <h2 class="text-xl font-bold text-white">신규 노드 등록</h2>
+          <p class="text-xs text-slate-500 uppercase tracking-widest mt-0.5">Device Provisioning System</p>
+        </div>
+        <button onclick="toggleModal(false)" class="w-10 h-10 rounded-full hover:bg-slate-800 flex items-center justify-center text-slate-400 transition-colors">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form id="device-form" class="p-8 space-y-6">
+        <div class="space-y-4">
+          <div class="group">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 group-focus-within:text-indigo-400"> Device Identity </label>
+            <input type="text" id="device_number" required placeholder="DEV-XXXX" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">MAC Configuration</label>
+            <input type="text" id="device_mac" required placeholder="00:00:00:00:00:00" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all font-mono" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Geographic Address</label>
+            <input type="text" id="address" required placeholder="Deployment Location" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all" />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Latitude</label>
+              <input type="number" step="any" id="latitude" required placeholder="37.5..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Longitude</label>
+              <input type="number" step="any" id="longitude" required placeholder="126.9..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all" />
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 flex gap-4">
+          <button type="button" onclick="toggleModal(false)" class="flex-1 px-6 py-3 rounded-xl font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition-all">CANCEL</button>
+          <button type="submit" class="flex-[2] neo-button text-white px-6 py-3 rounded-xl font-bold">DEPLOY NODE</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="notification" class="fixed bottom-8 right-8 z-[100] px-6 py-4 bg-slate-900 border border-slate-700 text-white rounded-2xl shadow-2xl flex items-center gap-4 translate-x-[150%] transition-transform duration-500">
+    <div id="notif-circle" class="w-10 h-10 rounded-xl flex items-center justify-center">
+      <i id="notif-icon" class="fas fa-check"></i>
+    </div>
+    <div>
+      <p id="notif-title" class="text-sm font-bold">System Alert</p>
+      <p id="notif-message" class="text-xs text-slate-400">Message content</p>
     </div>
   </div>
 </div>
-{% endblock %}
+{% endblock content %} {% block scripts %}
+<script src="{% static 'js/devices.js' %}"></script>
+{% endblock scripts %}
