@@ -113,6 +113,6 @@
     </div>
   </div>
 </div>
-{% endblock content %} {% block scripts %}
+{% endblock content %} {% block scripts %} {{ devices|json_script:"devices-data" }}
 <script src="{% static 'js/devices.js' %}"></script>
 {% endblock scripts %}

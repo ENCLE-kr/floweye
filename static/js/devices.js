@@ -1,79 +1,90 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const deviceGrid = document.getElementById('device-grid');
-  const emptyState = document.getElementById('empty-state');
-  const totalCount = document.getElementById('total-count');
-  const deviceForm = document.getElementById('device-form');
-  const modal = document.getElementById('modal');
-  const searchInput = document.getElementById('search-input');
+document.addEventListener("DOMContentLoaded", () => {
+  const deviceGrid = document.getElementById("device-grid");
+  const emptyState = document.getElementById("empty-state");
+  const totalCount = document.getElementById("total-count");
+  const deviceForm = document.getElementById("device-form");
+  const modal = document.getElementById("modal");
+  const searchInput = document.getElementById("search-input");
 
   if (!deviceGrid || !deviceForm || !modal || !searchInput) {
     return;
   }
 
-  let devices = JSON.parse(localStorage.getItem('devices_v2')) || [];
+  const devicesDataElement = document.getElementById("devices-data");
+  const initialDevices = devicesDataElement ? JSON.parse(devicesDataElement.textContent || "[]") : [];
+  const storedDevices = localStorage.getItem("devices_v2");
+  let devices = [];
+
+  if (storedDevices) {
+    try {
+      const parsed = JSON.parse(storedDevices) || [];
+      devices = parsed.length > 0 ? parsed : initialDevices;
+    } catch (error) {
+      devices = initialDevices;
+    }
+  } else {
+    devices = initialDevices;
+  }
 
   const toggleModal = (show) => {
     if (show) {
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-      modal.querySelector('div').classList.add('modal-enter');
+      modal.classList.remove("opacity-0", "pointer-events-none");
+      modal.querySelector("div").classList.add("modal-enter");
     } else {
-      modal.classList.add('opacity-0', 'pointer-events-none');
-      modal.querySelector('div').classList.remove('modal-enter');
+      modal.classList.add("opacity-0", "pointer-events-none");
+      modal.querySelector("div").classList.remove("modal-enter");
       deviceForm.reset();
     }
   };
 
-  const showNotification = (title, message, type = 'success') => {
-    const notif = document.getElementById('notification');
-    const circle = document.getElementById('notif-circle');
-    const icon = document.getElementById('notif-icon');
+  const showNotification = (title, message, type = "success") => {
+    const notif = document.getElementById("notification");
+    const circle = document.getElementById("notif-circle");
+    const icon = document.getElementById("notif-icon");
 
-    document.getElementById('notif-title').innerText = title;
-    document.getElementById('notif-message').innerText = message;
+    document.getElementById("notif-title").innerText = title;
+    document.getElementById("notif-message").innerText = message;
 
-    if (type === 'success') {
-      circle.className = 'w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center';
-      icon.className = 'fas fa-check';
+    if (type === "success") {
+      circle.className = "w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center";
+      icon.className = "fas fa-check";
     } else {
-      circle.className = 'w-10 h-10 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center';
-      icon.className = 'fas fa-exclamation-triangle';
+      circle.className = "w-10 h-10 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center";
+      icon.className = "fas fa-exclamation-triangle";
     }
 
-    notif.style.transform = 'translateX(0)';
+    notif.style.transform = "translateX(0)";
     setTimeout(() => {
-      notif.style.transform = 'translateX(150%)';
+      notif.style.transform = "translateX(150%)";
     }, 4000);
   };
 
   const saveToStorage = () => {
-    localStorage.setItem('devices_v2', JSON.stringify(devices));
+    localStorage.setItem("devices_v2", JSON.stringify(devices));
   };
 
   const renderDevices = () => {
     const searchTerm = searchInput.value.toLowerCase();
     const filtered = devices.filter((device) => {
-      return (
-        device.device_number.toLowerCase().includes(searchTerm) ||
-        device.device_mac.toLowerCase().includes(searchTerm) ||
-        device.address.toLowerCase().includes(searchTerm)
-      );
+      return device.device_number.toLowerCase().includes(searchTerm) || device.device_mac.toLowerCase().includes(searchTerm) || device.address.toLowerCase().includes(searchTerm);
     });
 
-    deviceGrid.innerHTML = '';
+    deviceGrid.innerHTML = "";
     totalCount.innerText = devices.length;
 
     if (filtered.length === 0) {
-      emptyState.classList.remove('hidden');
+      emptyState.classList.remove("hidden");
       return;
     }
-    emptyState.classList.add('hidden');
+    emptyState.classList.add("hidden");
 
     filtered.forEach((device, index) => {
-      const card = document.createElement('div');
-      card.className = 'glass-panel device-card p-6 rounded-3xl relative overflow-hidden group';
+      const card = document.createElement("div");
+      card.className = "glass-panel device-card p-6 rounded-3xl relative overflow-hidden group";
 
-      const status = Math.random() > 0.1 ? 'Online' : 'Warning';
-      const statusColor = status === 'Online' ? 'text-emerald-400' : 'text-amber-400';
+      const normalizedStatus = (device.status || (Math.random() > 0.1 ? "online" : "warning")).toLowerCase();
+      const statusLabel = normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
+      const statusColor = normalizedStatus === "online" ? "text-emerald-400" : normalizedStatus === "warning" ? "text-amber-400" : "text-red-400";
 
       card.innerHTML = `
         <div class="flex justify-between items-start mb-6">
@@ -100,8 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="text-right">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Status</p>
             <p class="text-xs font-bold ${statusColor} mt-0.5 flex items-center justify-end gap-1">
-              <span class="status-dot ${statusColor.replace('text', 'bg')}"></span>
-              ${status}
+              <span class="status-dot ${statusColor.replace("text", "bg")}"></span>
+              ${statusLabel}
             </p>
           </div>
         </div>
@@ -123,20 +134,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  deviceForm.addEventListener('submit', (event) => {
+  deviceForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
+    const rawMacInput = document.getElementById("device_mac").value.trim();
     const newDevice = {
-      device_number: document.getElementById('device_number').value,
-      device_mac: document.getElementById('device_mac').value.toUpperCase(),
-      address: document.getElementById('address').value,
-      latitude: document.getElementById('latitude').value,
-      longitude: document.getElementById('longitude').value
+      device_number: document.getElementById("device_number").value,
+      device_mac: rawMacInput.toUpperCase(),
+      address: document.getElementById("address").value,
+      latitude: document.getElementById("latitude").value,
+      longitude: document.getElementById("longitude").value,
     };
 
     const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
-    if (!macRegex.test(newDevice.device_mac)) {
-      showNotification('Invalid Config', 'MAC 주소 형식이 올바르지 않습니다.', 'error');
+    const numericRegex = /^\d+$/;
+    if (!macRegex.test(newDevice.device_mac) && !numericRegex.test(rawMacInput)) {
+      showNotification("Invalid Config", "MAC 주소 또는 숫자 형식만 허용됩니다.", "error");
       return;
     }
 
@@ -144,11 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
     saveToStorage();
     renderDevices();
     toggleModal(false);
-    showNotification('Deployment Success', `${newDevice.device_number} 노드가 활성화되었습니다.`);
+    showNotification("Deployment Success", `${newDevice.device_number} 노드가 활성화되었습니다.`);
   });
 
-  deviceGrid.addEventListener('click', (event) => {
-    const target = event.target.closest('.device-delete');
+  deviceGrid.addEventListener("click", (event) => {
+    const target = event.target.closest(".device-delete");
     if (!target) {
       return;
     }
@@ -158,38 +171,22 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (confirm('이 노드를 네트워크에서 제외하시겠습니까?')) {
+    if (confirm("이 노드를 네트워크에서 제외하시겠습니까?")) {
       const name = devices[index].device_number;
       devices.splice(index, 1);
       saveToStorage();
       renderDevices();
-      showNotification('Node Terminated', `${name} 노드가 제거되었습니다.`, 'error');
+      showNotification("Node Terminated", `${name} 노드가 제거되었습니다.`, "error");
     }
   });
 
-  searchInput.addEventListener('input', () => {
+  searchInput.addEventListener("input", () => {
     renderDevices();
   });
 
   window.toggleModal = toggleModal;
 
-  if (devices.length === 0) {
-    devices = [
-      {
-        device_number: 'NEXUS-01',
-        device_mac: 'A1:B2:C3:D4:E5:F6',
-        address: '서울특별시 강남구 테헤란로 123',
-        latitude: '37.5002',
-        longitude: '127.0365'
-      },
-      {
-        device_number: 'SAT-ALPHA',
-        device_mac: 'FF:EE:DD:CC:BB:AA',
-        address: '경기도 성남시 분당구 판교역로 231',
-        latitude: '37.4012',
-        longitude: '127.1086'
-      }
-    ];
+  if ((!storedDevices || devices.length === 0) && initialDevices.length > 0) {
     saveToStorage();
   }
 
