@@ -1,5 +1,9 @@
+$accent: #6366f1;
+$accent-glow: rgba(99, 102, 241, 0.4);
+
 // 색상 변수
-$sidebar-bg: #ffffff;
+// $sidebar-bg: #ffffff;
+$sidebar-bg: #0f172a;
 $sidebar-text: #2c3e50;
 $sidebar-text-muted: #6c757d;
 $sidebar-active: #3498db;
@@ -14,7 +18,10 @@ $navbar-text-active: #2c3e50;
 $body-bg: #f5f7fa;
 $body-text: #333;
 
-$card-bg: #ffffff;
+$bg-dark: #020617;
+
+// $card-bg: #ffffff;
+$card-bg: rgba(30, 41, 59, 0.5);
 $card-border: #e0e0e0;
 
 // 폰트 변수

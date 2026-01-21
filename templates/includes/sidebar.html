@@ -1,31 +1,40 @@
 {% load static %}
 <!-- 사이드바 -->
-<aside class="sidebar">
-  <div class="sidebar-header">
-    <div class="logo">
-      <img src="{% static 'images/floweye-icon.png' %}" alt="FLOWEYE Logo" class="logo-img" />
+<aside class="sidebar flex flex-col shrink-0">
+  <div class="p-6 border-b border-slate-800/50 mb-6">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white">
+        <!-- <i class="fas fa-microchip text-xl"></i> -->
+        <img src="{% static 'images/floweye-icon.png' %}" alt="FLOWEYE Logo" class="logo-img" />
+      </div>
+      <div>
+        <h1 class="text-lg font-bold tracking-tight text-white leading-none">FLOWEYE</h1>
+      </div>
     </div>
   </div>
-  <nav class="sidebar-nav">
-    <ul class="nav-menu">
-      <li class="nav-item">
-        <a href="{% url 'dashboard' %}" class="nav-link {% if segment == 'dashboard' or segment == 'index' %}active{% endif %}">
-          <i class="bi bi-speedometer2"></i>
-          <span>Dashboard</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{% url 'map' %}" class="nav-link {% if segment == 'map' %}active{% endif %}">
-          <i class="bi bi-geo-alt-fill"></i>
-          <span>Map</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{% url 'devices' %}" class="nav-link {% if segment == 'devices' %}active{% endif %}">
-          <i class="bi bi-device-hdd"></i>
-          <span>Devices</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+  <div class="p-6">
+    <nav class="space-y-1">
+      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 px-3">Main Menu</p>
+      <a href="{% url 'dashboard' %}" class="nav-item nav-link flex items-center gap-3 px-4 py-3 rounded-lg font-semibold text-sm">
+        <i class="fas fa-chart-pie w-5"></i>
+        DASHBOARD
+      </a>
+      <a href="{% url 'devices' %}" class="nav-item nav-link flex items-center gap-3 px-4 py-3 rounded-lg font-semibold text-sm">
+        <i class="fas fa-microchip w-5"></i>
+        DEVICES
+      </a>
+    </nav>
+  </div>
+
+  <div class="mt-auto p-6 border-t border-slate-800/50">
+    <div class="flex items-center gap-3 bg-slate-800/40 p-3 rounded-xl">
+      <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+        <i class="fas fa-user-shield text-xs"></i>
+      </div>
+      <div class="overflow-hidden">
+        <p class="text-xs font-bold text-white truncate">Administrator</p>
+        <p class="text-[10px] text-slate-500 uppercase">System Root</p>
+      </div>
+    </div>
+  </div>
 </aside>

@@ -1,233 +1,221 @@
-{% extends "layouts/base.html" %} {% load static %} {% block content %}
-<div class="page-header">
-  <h1>Dashboard</h1>
-  <p class="text-muted">대시보드 페이지입니다.</p>
-</div>
+{% extends "layouts/base.html" %} {% load static %} {% block stylesheets %}
+<style>
+  :root {
+    --bg-dark: #020617;
+    --sidebar-bg: #0f172a;
+    --accent: #6366f1;
+    --card-bg: rgba(30, 41, 59, 0.5);
+  }
 
-<div class="dashboard-container">
-  <!-- 상단: 4개의 수치 카드 -->
-  <section class="dashboard-top">
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="bi bi-people-fill"></i>
-      </div>
-      <div class="stat-content">
-        <div class="stat-label">현재 총 체류 인원</div>
-        <div class="stat-value" id="currentOccupancy">1,234</div>
-      </div>
-    </div>
+  .main-content {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: var(--bg-dark);
+    color: #f1f5f9;
+  }
 
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="bi bi-bar-chart-fill"></i>
-      </div>
-      <div class="stat-content">
-        <div class="stat-label">현재 총 밀집도</div>
-        <div class="stat-value" id="currentDensity">68%</div>
-      </div>
-    </div>
+  .glass-panel {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
 
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="bi bi-calendar-day"></i>
-      </div>
-      <div class="stat-content">
-        <div class="stat-label">오늘 누적 방문 인원</div>
-        <div class="stat-value" id="todayVisitors">5,678</div>
-      </div>
-    </div>
+  .chart-container {
+    position: relative;
+    height: 220px;
+    width: 100%;
+  }
 
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="bi bi-calendar-range"></i>
-      </div>
-      <div class="stat-content">
-        <div class="stat-label">기간 내 누적 방문 인원</div>
-        <div class="stat-value" id="periodVisitors">45,678</div>
-      </div>
-    </div>
-  </section>
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 10px;
+  }
 
-  <!-- 중간: 3개의 그래프 -->
-  <section class="dashboard-middle">
-    <div class="chart-card">
-      <div class="chart-header">
-        <h3>현재 총 체류 인원 추이</h3>
-      </div>
-      <div class="chart-container">
-        <canvas id="occupancyChart"></canvas>
-      </div>
-    </div>
+  .dashboard-page .neo-button {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-    <div class="chart-card">
-      <div class="chart-header">
-        <h3>현재 총 밀집도 추이</h3>
-      </div>
-      <div class="chart-container">
-        <canvas id="densityChart"></canvas>
-      </div>
-    </div>
-
-    <div class="chart-card">
-      <div class="chart-header">
-        <h3>오늘 누적 방문 인원 추이</h3>
-      </div>
-      <div class="chart-container">
-        <canvas id="visitorsChart"></canvas>
-      </div>
-    </div>
-  </section>
-
-  <!-- 하단: 디바이스 정보 -->
-  <section class="dashboard-bottom">
-    <div class="bottom-content">
-      <div class="device-section">
-        <div class="section-header">
-          <h2>디바이스 정보</h2>
+  .dashboard-page .neo-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+    filter: brightness(1.1);
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="dashboard-page flex flex-col min-w-0 overflow-hidden">
+  <div class="flex-1 overflow-y-auto custom-scrollbar min-h-screen py-6 px-4 md:px-12">
+    <div id="view-dashboard" class="space-y-8 mx-auto">
+      <nav class="mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 neo-button rounded-2xl flex items-center justify-center text-white">
+            <i class="fas fa-chart-pie text-2xl"></i>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white">FLOWEYE <span class="text-indigo-400">DASHBOARD</span></h1>
+            <div class="flex items-center gap-2 text-xs text-slate-400 font-medium">
+              <span class="status-dot text-emerald-500 bg-emerald-500"></span>
+              SYSTEM OPERATIONAL
+            </div>
+          </div>
         </div>
-        <div class="table-responsive">
-          <table class="device-table">
-            <thead>
-              <tr>
-                <th>디바이스 이름</th>
-                <th>위치</th>
-                <th>상태</th>
-                <th>밀집레벨</th>
-                <th>밀집도(m²)</th>
-                <th>인원수</th>
-                <th>밀집도 추이</th>
-                <th>마지막 업데이트</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr data-device-id="1">
-                <td>
-                  <span class="device-name-text">Device-001</span>
-                </td>
-                <td>
-                  <span class="device-location-text">1층 로비</span>
-                </td>
-                <td>
-                  <span class="device-status-badge online">정상 작동</span>
-                </td>
-                <td>
-                  <span class="density-level-badge high">높음</span>
-                </td>
-                <td>
-                  <span class="density-value">1.56명</span>
-                </td>
-                <td>
-                  <span class="occupancy-count">156명</span>
-                </td>
-                <td>
-                  <div class="sparkline-chart-container">
-                    <canvas class="sparkline-chart" data-device-id="1" width="120" height="30"></canvas>
-                  </div>
-                </td>
-                <td>2분 전</td>
-              </tr>
-              <tr data-device-id="2">
-                <td>
-                  <span class="device-name-text">Device-002</span>
-                </td>
-                <td>
-                  <span class="device-location-text">2층 복도</span>
-                </td>
-                <td>
-                  <span class="device-status-badge online">정상 작동</span>
-                </td>
-                <td>
-                  <span class="density-level-badge medium">보통</span>
-                </td>
-                <td>
-                  <span class="density-value">0.89명</span>
-                </td>
-                <td>
-                  <span class="occupancy-count">89명</span>
-                </td>
-                <td>
-                  <div class="sparkline-chart-container">
-                    <canvas class="sparkline-chart" data-device-id="2" width="120" height="30"></canvas>
-                  </div>
-                </td>
-                <td>1분 전</td>
-              </tr>
-              <tr data-device-id="3">
-                <td>
-                  <span class="device-name-text">Device-003</span>
-                </td>
-                <td>
-                  <span class="device-location-text">3층 회의실</span>
-                </td>
-                <td>
-                  <span class="device-status-badge offline">오프라인</span>
-                </td>
-                <td>
-                  <span class="density-level-badge low">낮음</span>
-                </td>
-                <td>
-                  <span class="density-value">--</span>
-                </td>
-                <td>
-                  <span class="occupancy-count">--</span>
-                </td>
-                <td>
-                  <div class="sparkline-chart-container">
-                    <canvas class="sparkline-chart" data-device-id="3" width="120" height="30"></canvas>
-                  </div>
-                </td>
-                <td>15분 전</td>
-              </tr>
-              <tr data-device-id="4">
-                <td>
-                  <span class="device-name-text">Device-004</span>
-                </td>
-                <td>
-                  <span class="device-location-text">지하 1층</span>
-                </td>
-                <td>
-                  <span class="device-status-badge online">정상 작동</span>
-                </td>
-                <td>
-                  <span class="density-level-badge low">낮음</span>
-                </td>
-                <td>
-                  <span class="density-value">0.34명</span>
-                </td>
-                <td>
-                  <span class="occupancy-count">34명</span>
-                </td>
-                <td>
-                  <div class="sparkline-chart-container">
-                    <canvas class="sparkline-chart" data-device-id="4" width="120" height="30"></canvas>
-                  </div>
-                </td>
-                <td>3분 전</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="flex items-center gap-4 w-full md:w-auto">
+          <div class="bg-slate-800/50 px-4 py-2 rounded-xl border border-slate-700/50 flex items-center gap-3">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span class="text-xs font-bold text-slate-300" id="live-timer">LIVE: 16:55:00</span>
+          </div>
+        </div>
+      </nav>
+
+      <header class="flex justify-between items-center"></header>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group">
+          <div class="flex justify-between items-start mb-3">
+            <div class="text-indigo-400 bg-indigo-500/10 p-2.5 rounded-xl"><i class="fas fa-users"></i></div>
+            <span class="text-[10px] font-bold text-indigo-400">+5.2%</span>
+          </div>
+          <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider">현재 총 체류 인원</p>
+          <h3 class="text-2xl font-bold text-white mt-1">1,284 <span class="text-xs font-normal text-slate-500">명</span></h3>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group border-l-2 border-l-amber-500">
+          <div class="flex justify-between items-start mb-3">
+            <div class="text-amber-400 bg-amber-500/10 p-2.5 rounded-xl"><i class="fas fa-bullseye"></i></div>
+            <span class="text-[10px] font-bold text-amber-400">HIGH</span>
+          </div>
+          <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider">현재 총 밀집도</p>
+          <h3 class="text-2xl font-bold text-white mt-1">78.2 <span class="text-xs font-normal text-slate-500">%</span></h3>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group">
+          <div class="flex justify-between items-start mb-3">
+            <div class="text-cyan-400 bg-cyan-500/10 p-2.5 rounded-xl"><i class="fas fa-walking"></i></div>
+          </div>
+          <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider">오늘 누적 방문 인원</p>
+          <h3 class="text-2xl font-bold text-white mt-1">8,421 <span class="text-xs font-normal text-slate-500">명</span></h3>
+        </div>
+        <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group">
+          <div class="flex justify-between items-start mb-3">
+            <div class="text-fuchsia-400 bg-fuchsia-500/10 p-2.5 rounded-xl"><i class="fas fa-history"></i></div>
+          </div>
+          <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider">기간 내 누적 방문 인원</p>
+          <h3 class="text-2xl font-bold text-white mt-1">42,506 <span class="text-xs font-normal text-slate-500">명</span></h3>
         </div>
       </div>
 
-      <!-- 알람 로그 섹션 -->
-      <div class="alarm-section">
-        <div class="section-header">
-          <h2>밀집도 알람</h2>
-          <button class="btn-clear-alarms" onclick="clearAlarms()" title="알람 지우기">
-            <i class="bi bi-trash"></i>
-          </button>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="glass-panel p-6 rounded-3xl">
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">현재 총 체류 인원 추이</h4>
+          <div class="chart-container">
+            <canvas id="chartOccupancy"></canvas>
+          </div>
         </div>
-        <div class="alarm-log-container">
-          <div class="alarm-log" id="alarmLog">
-            <!-- 알람 로그 항목들이 여기에 동적으로 추가됩니다 -->
+        <div class="glass-panel p-6 rounded-3xl">
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">현재 총 밀집도 추이</h4>
+          <div class="chart-container">
+            <canvas id="chartDensity"></canvas>
+          </div>
+        </div>
+        <div class="glass-panel p-6 rounded-3xl">
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">오늘 누적 방문 인원 추이</h4>
+          <div class="chart-container">
+            <canvas id="chartTodayVisit"></canvas>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </div>
 {% endblock %} {% block scripts %}
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="{% static 'js/dashboard.js' %}"></script>
+<script>
+  setInterval(() => {
+    const now = new Date();
+    const timer = document.getElementById("live-timer");
+    if (timer) {
+      timer.innerText = `LIVE: ${now.toTimeString().split(" ")[0]}`;
+    }
+  }, 1000);
+
+  function initCharts() {
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 1000, easing: "easeOutQuart" },
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: "#64748b", font: { size: 10 } } },
+        y: { grid: { color: "rgba(255,255,255,0.03)" }, ticks: { color: "#64748b", font: { size: 10 } } },
+      },
+    };
+
+    const labels = ["09시", "11시", "13시", "15시", "17시", "19시", "21시"];
+
+    new Chart(document.getElementById("chartOccupancy"), {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            data: [420, 750, 1100, 1284, 950, 1180, 850],
+            borderColor: "#6366f1",
+            backgroundColor: "rgba(99, 102, 241, 0.1)",
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+          },
+        ],
+      },
+      options: commonOptions,
+    });
+
+    new Chart(document.getElementById("chartDensity"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          {
+            data: [30, 52, 75, 78, 55, 68, 42],
+            backgroundColor: "#f59e0b",
+            borderRadius: 6,
+            barThickness: 12,
+          },
+        ],
+      },
+      options: commonOptions,
+    });
+
+    new Chart(document.getElementById("chartTodayVisit"), {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            data: [1100, 2400, 4900, 6500, 7200, 8100, 8421],
+            borderColor: "#06b6d4",
+            backgroundColor: "rgba(6, 182, 212, 0.1)",
+            fill: true,
+            tension: 0,
+            borderWidth: 2,
+            pointRadius: 4,
+            pointBackgroundColor: "#06b6d4",
+          },
+        ],
+      },
+      options: commonOptions,
+    });
+  }
+
+  window.addEventListener("load", initCharts);
+</script>
 {% endblock %}

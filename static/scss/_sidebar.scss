@@ -2,6 +2,7 @@
 
 // 사이드바 스타일
 .sidebar {
+  font-family: "Plus Jakarta Sans", "Pretendard", sans-serif;
   width: $sidebar-width;
   background-color: $sidebar-bg;
   color: $sidebar-text;
@@ -23,6 +24,12 @@
     align-items: center;
     box-sizing: border-box;
   }
+}
+
+// test.html 사이드바 스타일 보강 (Tailwind 클래스 조합용)
+.sidebar.flex {
+  background: var(--sidebar-bg, #{$sidebar-bg});
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .logo {
@@ -54,6 +61,27 @@
 
 .nav-item {
   margin: 0;
+}
+
+.sidebar.flex .nav-item {
+  transition: all 0.2s ease;
+  color: #94a3b8;
+  cursor: pointer;
+
+  &.active {
+    background: rgba(99, 102, 241, 0.1);
+    color: #818cf8;
+    border-right: 3px solid #6366f1;
+  }
+
+  &:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.03);
+    color: #f1f5f9;
+  }
+}
+
+.sidebar .neo-glow-icon {
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
 }
 
 .nav-link {
