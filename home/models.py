@@ -29,3 +29,13 @@ class Device(models.Model):
 
     def __str__(self):
         return f"{self.device_number} ({self.device_mac})"
+
+
+class DeviceLog(models.Model):
+    mac = models.TextField()
+    src_mac = models.TextField()
+    time = models.DateTimeField()
+    rssi = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.mac} -> {self.src_mac}"

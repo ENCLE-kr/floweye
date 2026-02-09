@@ -132,6 +132,71 @@
           </div>
         </div>
       </div>
+
+      <section class="glass-panel p-6 rounded-3xl">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-sm font-bold text-slate-300 uppercase tracking-widest">디바이스 정보</h3>
+          <span class="text-[11px] text-slate-500">최근 업데이트 기준</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="text-[11px] uppercase tracking-wider text-slate-500">
+              <tr class="border-b border-white/5">
+                <th class="py-3 pr-4">디바이스 이름</th>
+                <th class="py-3 pr-4">위치</th>
+                <th class="py-3 pr-4">상태</th>
+                <th class="py-3 pr-4">밀집레벨</th>
+                <th class="py-3 pr-4">밀집도(m²)</th>
+                <th class="py-3 pr-4">인원수</th>
+                <th class="py-3 pr-4">마지막 업데이트</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300">
+              {% if devices %}
+                {% for device in devices %}
+                  <tr class="border-b border-white/5">
+                    <td class="py-3 pr-4 font-semibold text-white">{{ device.device_number }}</td>
+                    <td class="py-3 pr-4 text-slate-400">{{ device.address }}</td>
+                    <td class="py-3 pr-4">
+                      {% if device.status == "online" %}
+                        <span class="text-emerald-400 font-semibold">정상 작동</span>
+                      {% elif device.status == "warning" %}
+                        <span class="text-amber-400 font-semibold">주의</span>
+                      {% else %}
+                        <span class="text-rose-400 font-semibold">오프라인</span>
+                      {% endif %}
+                    </td>
+                    <td class="py-3 pr-4">
+                      {% cycle "높음" "보통" "낮음" as density_label silent %}
+                      {% cycle "text-rose-400" "text-amber-400" "text-emerald-400" as density_class silent %}
+                      <span class="{{ density_class }} font-semibold">{{ density_label }}</span>
+                    </td>
+                    <td class="py-3 pr-4">
+                      {% cycle "1.56명" "0.92명" "0.38명" "1.12명" as density_value silent %}
+                      {{ density_value }}
+                    </td>
+                    <td class="py-3 pr-4">
+                      {% cycle "156명" "92명" "38명" "112명" as occupancy_value silent %}
+                      {{ occupancy_value }}
+                    </td>
+                    <td class="py-3 pr-4 text-slate-500">
+                      {% if device.last_ping %}
+                        {{ device.last_ping|date:"Y-m-d H:i" }}
+                      {% else %}
+                        {{ device.updated_at|date:"Y-m-d H:i" }}
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td class="py-8 text-center text-slate-500" colspan="7">등록된 디바이스가 없습니다.</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   </div>
 </div>

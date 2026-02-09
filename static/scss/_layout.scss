@@ -25,6 +25,9 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  font-family: "Plus Jakarta Sans", "Pretendard", sans-serif;
+  background-color: $bg-dark;
+  color: #f1f5f9;
 }
 
 // 컨텐츠 래퍼

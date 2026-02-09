@@ -1,9 +1,17 @@
 <!-- 상단 네비게이션 바 -->
-<nav class="navbar">
-  <div class="navbar-content">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'index' %}">Page</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{ page_title|default:"Dashboard" }}</li>
-    </ol>
+<header class="top-header h-16 shrink-0 flex items-center justify-between px-8 z-10">
+  <div class="flex items-center gap-4">
+    <div class="hidden md:flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
+      <span>Main</span>
+      <i class="fas fa-chevron-right text-[10px] opacity-30"></i>
+      <span class="text-slate-300">{{ page_title|default:"Dashboard" }}</span>
+    </div>
   </div>
-</nav>
+
+  <div class="flex items-center gap-2">
+    <button class="w-8 h-8 rounded-lg hover:bg-slate-800 flex items-center justify-center text-slate-400 transition-colors relative" type="button" aria-label="Notifications">
+      <i class="fas fa-bell text-sm"></i>
+      <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+    </button>
+  </div>
+</header>

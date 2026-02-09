@@ -6,9 +6,11 @@ def index(request):
     return redirect('dashboard')
 
 def dashboard(request):
+    devices = Device.objects.all().order_by("-created_at")
     context = {
         'segment': 'dashboard',
-        'page_title': 'Dashboard'
+        'page_title': 'Dashboard',
+        'devices': devices,
     }
     return render(request, 'home/dashboard.html', context)
 
