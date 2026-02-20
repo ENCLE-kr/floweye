@@ -8,20 +8,70 @@ from .models import Device, DeviceStatus
 def index(request):
     return redirect('dashboard')
 
+def _density_level(density):
+    """밀집도 수치 → 높음/보통/낮음"""
+    if density is None:
+        return None
+    v = float(density)
+    if v >= 0.8:
+        return ("높음", "text-rose-400")
+    if v >= 0.4:
+        return ("보통", "text-amber-400")
+    return ("낮음", "text-emerald-400")
+
+
 def dashboard(request):
     devices = Device.objects.all().order_by("-id")
     date_str = request.GET.get("date")
+    display_date = date_str or date.today().isoformat()
+    try:
+        target_date = date.fromisoformat(display_date)
+    except ValueError:
+        target_date = date.today()
 
     context = {
         'segment': 'dashboard',
         'page_title': 'Dashboard',
         'devices': devices,
-        'date': date_str or '',
+        'date': display_date,
         'stats': None,
         'chart_occupancy': None,
         'chart_density': None,
         'chart_today_visit': None,
     }
+
+    # 디바이스별 해당일 최신 상태 (디바이스 정보 테이블용)
+    status_qs = DeviceStatus.objects.filter(target_date=target_date)
+    if target_date == date.today():
+        status_qs = status_qs.filter(target_hour__lt=datetime.now().hour)
+    latest_by_device = {}
+    for row in status_qs.order_by("device_id", "-target_hour").iterator():
+        if row.device_id not in latest_by_device:
+            latest_by_device[row.device_id] = row
+
+    devices_with_status = []
+    for device in devices:
+        st = latest_by_device.get(device.id)
+        if st is not None:
+            level_label, level_class = _density_level(st.current_density) or ("—", "text-slate-500")
+            devices_with_status.append({
+                "device": device,
+                "current_stay_count": st.current_stay_count,
+                "current_density": float(st.current_density) if st.current_density is not None else None,
+                "density_level_label": level_label,
+                "density_level_class": level_class,
+                "status_updated_at": st.updated_at,
+            })
+        else:
+            devices_with_status.append({
+                "device": device,
+                "current_stay_count": None,
+                "current_density": None,
+                "density_level_label": "—",
+                "density_level_class": "text-slate-500",
+                "status_updated_at": None,
+            })
+    context["devices_with_status"] = devices_with_status
 
     if date_str:
         try:
@@ -80,6 +130,17 @@ def dashboard(request):
                 context["chart_occupancy"] = {"labels": labels, "data": occ_data}
                 context["chart_density"] = {"labels": labels, "data": dens_data}
                 context["chart_today_visit"] = {"labels": labels, "data": today_data}
+            else:
+                # 날짜 선택했으나 데이터 없음 → 0으로 표시
+                context["stats"] = {
+                    "current_stay_total": 0,
+                    "current_density_avg": 0,
+                    "today_visitor_total": 0,
+                    "period_visitor_total": 0,
+                }
+                context["chart_occupancy"] = {"labels": [], "data": [0]}
+                context["chart_density"] = {"labels": [], "data": [0]}
+                context["chart_today_visit"] = {"labels": [], "data": [0]}
 
     # JS에서 사용할 수 있도록 JSON 문자열로 전달
     for key in ("chart_occupancy", "chart_density", "chart_today_visit"):

@@ -157,38 +157,36 @@
               </tr>
             </thead>
             <tbody class="text-slate-300">
-              {% if devices %}
-                {% for device in devices %}
+              {% if devices_with_status %}
+                {% for row in devices_with_status %}
                   <tr class="border-b border-white/5">
-                    <td class="py-3 pr-4 font-semibold text-white">{{ device.device_number }}</td>
-                    <td class="py-3 pr-4 text-slate-400">{{ device.address }}</td>
+                    <td class="py-3 pr-4 font-semibold text-white">{{ row.device.device_number }}</td>
+                    <td class="py-3 pr-4 text-slate-400">{{ row.device.address|default:"—" }}</td>
                     <td class="py-3 pr-4">
-                      {% if device.status == "online" %}
+                      {% if row.device.status == "online" or row.device.status == "active" %}
                         <span class="text-emerald-400 font-semibold">정상 작동</span>
-                      {% elif device.status == "warning" %}
+                      {% elif row.device.status == "warning" %}
                         <span class="text-amber-400 font-semibold">주의</span>
                       {% else %}
                         <span class="text-rose-400 font-semibold">오프라인</span>
                       {% endif %}
                     </td>
                     <td class="py-3 pr-4">
-                      {% cycle "높음" "보통" "낮음" as density_label silent %}
-                      {% cycle "text-rose-400" "text-amber-400" "text-emerald-400" as density_class silent %}
-                      <span class="{{ density_class }} font-semibold">{{ density_label }}</span>
+                      <span class="{{ row.density_level_class }} font-semibold">{{ row.density_level_label }}</span>
                     </td>
                     <td class="py-3 pr-4">
-                      {% cycle "1.56명" "0.92명" "0.38명" "1.12명" as density_value silent %}
-                      {{ density_value }}
+                      {% if row.current_density is not None %}{{ row.current_density|floatformat:2 }}명/m²{% else %}—{% endif %}
                     </td>
                     <td class="py-3 pr-4">
-                      {% cycle "156명" "92명" "38명" "112명" as occupancy_value silent %}
-                      {{ occupancy_value }}
+                      {% if row.current_stay_count is not None %}{{ row.current_stay_count }}명{% else %}—{% endif %}
                     </td>
                     <td class="py-3 pr-4 text-slate-500">
-                      {% if device.last_ping %}
-                        {{ device.last_ping|date:"Y-m-d H:i" }}
+                      {% if row.status_updated_at %}
+                        {{ row.status_updated_at|date:"Y-m-d H:i" }}
+                      {% elif row.device.last_ping %}
+                        {{ row.device.last_ping|date:"Y-m-d H:i" }}
                       {% else %}
-                        {{ device.updated_at|date:"Y-m-d H:i" }}
+                        —
                       {% endif %}
                     </td>
                   </tr>
@@ -232,25 +230,36 @@
     };
 
     const defaultLabels = ["09시", "11시", "13시", "15시", "17시", "19시", "21시"];
-    const labels = (chartOccupancyData && chartOccupancyData.labels && chartOccupancyData.labels.length) ? chartOccupancyData.labels : defaultLabels;
-    const occData = (chartOccupancyData && chartOccupancyData.data) ? chartOccupancyData.data : [420, 750, 1100, 1284, 950, 1180, 850];
-    const densData = (chartDensityData && chartDensityData.data) ? chartDensityData.data : [30, 52, 75, 78, 55, 68, 42];
-    const todayData = (chartTodayVisitData && chartTodayVisitData.data) ? chartTodayVisitData.data : [1100, 2400, 4900, 6500, 7200, 8100, 8421];
-
+    const emptyChartLabels = ["데이터 없음"];
+    const emptyChartData = [0];
+    function resolveChart(chartData, defaultData) {
+      if (!chartData || !chartData.data) return { labels: defaultLabels, data: defaultData };
+      const data = chartData.data;
+      const hasLabels = chartData.labels && chartData.labels.length;
+      if (data.length === 1 && data[0] === 0 && !hasLabels) {
+        return { labels: emptyChartLabels, data: emptyChartData };
+      }
+      return { labels: hasLabels ? chartData.labels : defaultLabels, data: data };
+    }
+    const occ = resolveChart(chartOccupancyData, [420, 750, 1100, 1284, 950, 1180, 850]);
+    const dens = resolveChart(chartDensityData, [30, 52, 75, 78, 55, 68, 42]);
+    const today = resolveChart(chartTodayVisitData, [1100, 2400, 4900, 6500, 7200, 8100, 8421]);
     new Chart(document.getElementById("chartOccupancy"), {
       type: "line",
       data: {
-        labels,
+        labels: occ.labels,
         datasets: [
           {
-            data: occData,
+            data: occ.data,
             borderColor: "#6366f1",
             backgroundColor: "rgba(99, 102, 241, 0.1)",
             fill: true,
             tension: 0.4,
             borderWidth: 3,
-            pointRadius: 0,
+            pointRadius: 4,
             pointHoverRadius: 6,
+            pointStyle: "triangle",
+            pointBackgroundColor: "#6366f1",
           },
         ],
       },
@@ -260,10 +269,10 @@
     new Chart(document.getElementById("chartDensity"), {
       type: "bar",
       data: {
-        labels,
+        labels: dens.labels,
         datasets: [
           {
-            data: densData,
+            data: dens.data,
             backgroundColor: "#f59e0b",
             borderRadius: 6,
             barThickness: 12,
@@ -276,10 +285,10 @@
     new Chart(document.getElementById("chartTodayVisit"), {
       type: "line",
       data: {
-        labels,
+        labels: today.labels,
         datasets: [
           {
-            data: todayData,
+            data: today.data,
             borderColor: "#06b6d4",
             backgroundColor: "rgba(6, 182, 212, 0.1)",
             fill: true,

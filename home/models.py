@@ -54,6 +54,8 @@ class DeviceStatus(models.Model):
     )
     target_date = models.DateField(db_index=True)
     target_hour = models.IntegerField()
+    # 5분 단위 슬롯 (0, 5, 10, ..., 55)
+    target_minute = models.IntegerField(default=0, db_index=True)
     
     current_stay_count = models.IntegerField(default=0)
     current_density = models.DecimalField(max_digits=7, decimal_places=2, default=0.0)
@@ -64,13 +66,13 @@ class DeviceStatus(models.Model):
 
     class Meta:
         db_table = "home_device_status"
-        # 시간대별, 기기별 유니크 제약 추가
+        # 시간대별(5분 단위), 기기별 유니크 제약 추가
         constraints = [
             models.UniqueConstraint(
-                fields=['device', 'target_date', 'target_hour'],
+                fields=['device', 'target_date', 'target_hour', 'target_minute'],
                 name='unique_device_time_slot'
             )
         ]
 
     def __str__(self):
-        return f"{self.device.device_mac} - {self.target_date} {self.target_hour}h"
+        return f"{self.device.device_mac} - {self.target_date} {self.target_hour}h {self.target_minute}m"
