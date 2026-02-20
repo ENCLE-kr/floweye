@@ -69,7 +69,7 @@ class DeviceImporter:
         if selected["status"]:
             device_df["status"] = df[selected["status"]].astype(str).str.strip().str.lower()
         else:
-            device_df["status"] = "online"
+            device_df["status"] = "active"
 
         if selected["last_ping"]:
             device_df["last_ping"] = pd.to_datetime(df[selected["last_ping"]], errors="coerce")
@@ -87,9 +87,9 @@ class DeviceImporter:
     def insert(self, device_df: pd.DataFrame) -> int:
         insert_sql = f"""
             INSERT OR IGNORE INTO {self.table_name}
-                (device_number, device_mac, address, latitude, longitude, status, last_ping, created_at, updated_at)
+                (device_number, device_mac, address, latitude, longitude, status, last_ping)
             VALUES
-                (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                (?, ?, ?, ?, ?, ?, ?)
         """
         payload = [
             (
@@ -98,7 +98,7 @@ class DeviceImporter:
                 row.address,
                 float(row.latitude),
                 float(row.longitude),
-                row.status if row.status in {"online", "warning", "offline"} else "online",
+                row.status if row.status in {"active", "online", "warning", "offline"} else "active",
                 None if pd.isna(row.last_ping) else row.last_ping.to_pydatetime(),
             )
             for row in device_df.itertuples(index=False)
@@ -173,21 +173,36 @@ class DeviceLogImporter:
         return log_df
 
     def insert(self, log_df: pd.DataFrame) -> int:
+        device_table = "home_device"
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                f"SELECT id, device_mac FROM {device_table}"
+            )
+            mac_to_id = {
+                (row[1].strip().upper() if row[1] else ""): row[0]
+                for row in cursor.fetchall()
+            }
+
         insert_sql = f"""
             INSERT INTO {self.table_name}
-                (mac, src_mac, time, rssi)
+                (device_id, src_mac, time, rssi)
             VALUES
                 (?, ?, ?, ?)
         """
-        payload = [
-            (
-                row.mac,
-                row.src_mac,
-                None if pd.isna(row.time) else row.time.to_pydatetime(),
-                None if pd.isna(row.rssi) else int(row.rssi),
+        payload = []
+        for row in log_df.itertuples(index=False):
+            device_id = mac_to_id.get(str(row.mac).strip().upper())
+            if device_id is None:
+                continue
+            payload.append(
+                (
+                    device_id,
+                    row.src_mac,
+                    None if pd.isna(row.time) else row.time.to_pydatetime(),
+                    None if pd.isna(row.rssi) else int(row.rssi),
+                )
             )
-            for row in log_df.itertuples(index=False)
-        ]
 
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()

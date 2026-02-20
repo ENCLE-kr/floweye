@@ -6,7 +6,7 @@ def index(request):
     return redirect('dashboard')
 
 def dashboard(request):
-    devices = Device.objects.all().order_by("-created_at")
+    devices = Device.objects.all().order_by("-id")
     context = {
         'segment': 'dashboard',
         'page_title': 'Dashboard',
@@ -31,7 +31,7 @@ def devices(request):
             "longitude": str(device.longitude),
             "status": device.status,
         }
-        for device in Device.objects.all().order_by("-created_at")
+        for device in Device.objects.all().order_by("-id")
     ]
     context = {
         'segment': 'devices',
