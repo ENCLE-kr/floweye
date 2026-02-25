@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from django.db.models import Avg, Max, Sum
 from django.shortcuts import render, redirect
 
@@ -45,32 +45,39 @@ def dashboard(request):
     if target_date == date.today():
         status_qs = status_qs.filter(target_hour__lt=datetime.now().hour)
     latest_by_device = {}
-    for row in status_qs.order_by("device_id", "-target_hour").iterator():
+    for row in status_qs.order_by("device_id", "-target_hour", "-target_minute").iterator():
         if row.device_id not in latest_by_device:
             latest_by_device[row.device_id] = row
+
+    # 밀집도: 실시간(오늘) = 현재 시각 5분 전 슬롯 값 / 과거 = 디바이스별 전체 5분 슬롯 평균
+    if target_date == date.today():
+        t = datetime.now() - timedelta(minutes=5)
+        slot_hour, slot_minute = t.hour, (t.minute // 5) * 5
+        slot_qs = DeviceStatus.objects.filter(
+            target_date=target_date,
+            target_hour=slot_hour,
+            target_minute=slot_minute,
+        )
+        density_by_device = {r.device_id: float(r.current_density) if r.current_density is not None else None for r in slot_qs}
+    else:
+        density_by_device = {
+            r["device_id"]: float(r["avg_density"]) if r["avg_density"] is not None else None
+            for r in status_qs.values("device_id").annotate(avg_density=Avg("current_density"))
+        }
 
     devices_with_status = []
     for device in devices:
         st = latest_by_device.get(device.id)
-        if st is not None:
-            level_label, level_class = _density_level(st.current_density) or ("—", "text-slate-500")
-            devices_with_status.append({
-                "device": device,
-                "current_stay_count": st.current_stay_count,
-                "current_density": float(st.current_density) if st.current_density is not None else None,
-                "density_level_label": level_label,
-                "density_level_class": level_class,
-                "status_updated_at": st.updated_at,
-            })
-        else:
-            devices_with_status.append({
-                "device": device,
-                "current_stay_count": None,
-                "current_density": None,
-                "density_level_label": "—",
-                "density_level_class": "text-slate-500",
-                "status_updated_at": None,
-            })
+        density = density_by_device.get(device.id)
+        level_label, level_class = _density_level(density) if density is not None else ("—", "text-slate-500")
+        devices_with_status.append({
+            "device": device,
+            "current_stay_count": st.current_stay_count if st is not None else None,
+            "current_density": density,
+            "density_level_label": level_label,
+            "density_level_class": level_class,
+            "status_updated_at": st.updated_at if st is not None else None,
+        })
     context["devices_with_status"] = devices_with_status
 
     if date_str:
